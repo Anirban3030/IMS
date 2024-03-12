@@ -1,10 +1,10 @@
 <?php
 // Check if the user is logged in, if not, redirect to login page
 session_start();
-if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
-    header("location: index.php");
-    exit;
-}
+// if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
+//     header("location: index.php");
+//     exit;
+// }
 
 // Include the database connection
 include("connection.php");

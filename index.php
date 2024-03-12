@@ -15,10 +15,10 @@ if (isset($_POST["register"])) {
         $error = "Passwords do not match";
     } else {
         // Hash the password
-        $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+        // $hashed_password = password_hash($password, PASSWORD_DEFAULT);
 
         // Insert user into the database
-        $query = "INSERT INTO user (UserId, FullName, EmailId, Password) VALUES ('$userid', '$fullname', '$emailid', '$hashed_password')";
+        $query = "INSERT INTO user (UserId, FullName, EmailId, Password) VALUES ('$userid', '$fullname', '$emailid', '$password')";
 
         if (mysqli_query($con, $query)) {
             $success = "Registration successful. Please log in.";
@@ -28,37 +28,51 @@ if (isset($_POST["register"])) {
     }
 }
 
-// Login Logic
-if (isset($_POST["login"])) {
-    $userid = mysqli_real_escape_string($con, $_POST['UserId']);
-    $password = mysqli_real_escape_string($con, $_POST['Password']);
+if(isset($_POST['login'])) {
+    $uname = $_POST['UserId'];
+    $pwd = $_POST['Password'];
 
     // Retrieve user from the database
-    $query = "SELECT * FROM user WHERE UserId='$userid'";
+    $query = "SELECT * FROM user WHERE UserId='$uname'";
     $result = mysqli_query($con, $query);
 
     if ($result && mysqli_num_rows($result) > 0) {
         $user = mysqli_fetch_assoc($result);
-        // Verify password
-        if (password_verify($password, $user['Password'])) {
+        
+        // Get the stored plain text password from the database
+        $storedPlainTextPassword = $user['Password'];
+        
+        // Compare the entered password with the stored plain text password
+        if ($pwd === $storedPlainTextPassword) {
             // Password is correct, create session and redirect to dashboard
-            $_SESSION['user_id'] = $user['UserId'];
-            // Redirect to user dashboard
+            $_SESSION['username'] = $user['UserId']; // Assuming username is the UserId
             header("Location: dashboard.php");
-            exit();
+            exit(); // Add exit() here
         } else {
-            $error = "Invalid username or password";
+            // Password is incorrect
+            ?>
+            <div class="container" style="margin-left: 58px;">
+                <div class="alert alert-danger" role="alert" width="300">
+                    Incorrect password
+                </div>
+            </div>
+            <?php
         }
     } else {
-        $error = "Invalid username or password";
+        // No matching user found
+        ?>
+        <div class="container" style="margin-left: 58px;">
+            <div class="alert alert-danger" role="alert" width="300">
+                User not found
+            </div>
+        </div>
+        <?php
     }
-} 
-else{
-    // This block executes when the form is not submitted
-    // You can remove or modify it as needed
-    echo "Error: Login form not submitted";
 }
+
+
 ?>
+
 <?php include("header.php"); ?>
 
 <div class="hero">
@@ -68,7 +82,7 @@ else{
             <button type="button" class="toggle-btn" onclick="login()">Log-In</button>
             <button type="button" class="toggle-btn" onclick="register()">Register</button>
         </div>
-        <form id="login" class="input-group" method="post">
+        <form id="login" class="input-group" method="post" onsubmit="return onSubmit()">
             <!-- Login form -->
             <input type="text" class="input-field" name="UserId" placeholder="User Id" required>
             <input type="password" class="input-field" name="Password" placeholder="Enter Password" required>
@@ -105,5 +119,10 @@ else{
         x.style.left = "50px";
         y.style.left = "450px";
         z.style.left = "0";
+    }
+
+    function onSubmit() {
+        alert("Pressed");
+        return true;
     }
 </script>
