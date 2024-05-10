@@ -10,14 +10,11 @@ if (isset($_POST["register"])) {
     $password = mysqli_real_escape_string($con, $_POST['Password']);
     $confirmPassword = mysqli_real_escape_string($con, $_POST['ConfirmPassword']);
 
-    // Check if passwords match
+
     if ($password != $confirmPassword) {
         $error = "Passwords do not match";
     } else {
-        // Hash the password
-        // $hashed_password = password_hash($password, PASSWORD_DEFAULT);
 
-        // Insert user into the database
         $query = "INSERT INTO user (UserId, FullName, EmailId, Password) VALUES ('$userid', '$fullname', '$emailid', '$password')";
 
         if (mysqli_query($con, $query)) {
@@ -27,46 +24,47 @@ if (isset($_POST["register"])) {
         }
     }
 }
+//login logic 
 
-if(isset($_POST['login'])) {
+if (isset($_POST['login'])) {
     $uname = $_POST['UserId'];
     $pwd = $_POST['Password'];
 
-    // Retrieve user from the database
+
     $query = "SELECT * FROM user WHERE UserId='$uname'";
     $result = mysqli_query($con, $query);
 
     if ($result && mysqli_num_rows($result) > 0) {
         $user = mysqli_fetch_assoc($result);
-        
-        // Get the stored plain text password from the database
+
+
         $storedPlainTextPassword = $user['Password'];
-        
-        // Compare the entered password with the stored plain text password
+
+
         if ($pwd === $storedPlainTextPassword) {
-            // Password is correct, create session and redirect to dashboard
-            $_SESSION['username'] = $user['UserId']; // Assuming username is the UserId
+
+            $_SESSION['username'] = $user['UserId'];
             header("Location: dashboard.php");
             exit(); // Add exit() here
         } else {
-            // Password is incorrect
-            ?>
+
+?>
             <div class="container" style="margin-left: 58px;">
                 <div class="alert alert-danger" role="alert" width="300">
                     Incorrect password
                 </div>
             </div>
-            <?php
+        <?php
         }
     } else {
-        // No matching user found
+
         ?>
         <div class="container" style="margin-left: 58px;">
             <div class="alert alert-danger" role="alert" width="300">
                 User not found
             </div>
         </div>
-        <?php
+<?php
     }
 }
 
@@ -74,6 +72,20 @@ if(isset($_POST['login'])) {
 ?>
 
 <?php include("header.php"); ?>
+
+<nav class="navbar">
+    <ul>
+        <li style="float: left; padding: 5px;">
+            <img src="inventorylogo.jpg" alt="Logo" style="height: 50px; width: 50px; border-radius: 50%; margin-right: 10px;">
+        </li>
+        <li style="float: left; padding: 18px 20px;">
+            <h1 style="color: white; margin: 0;">Inventory Management System</h1>
+        </li>
+        <li><a href="#">Contact Us</a></li>
+        <li><a href="#">About Us</a></li>
+        <li><a href="#">Home</a></li>
+    </ul>
+</nav>
 
 <div class="hero">
     <div class="form-box">
